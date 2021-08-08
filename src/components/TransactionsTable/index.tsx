@@ -1,11 +1,30 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "../../services/api";
+import { FormatDate } from "../../utils/FormatDate";
+import { FormatNumber } from "../../utils/FormatNumber";
 import { Container } from "./styles";
 
+interface TransactionProps {
+  id: number;
+  title: string;
+  amount: number;
+  type: string;
+  category: string;
+  createdAt: string;
+}
+
 export function TransactionsTable() {
-  useEffect(() => {
-    api.get('/transactions').then(data => console.log(data))
+  const [transactions, setTransactions] = useState<TransactionProps[]>([]);
+
+  const handleGetTransaction = useCallback(async () => {
+    const response = await api.get('/transactions');
+
+    setTransactions(response.data.transactions)
   }, [])
+
+  useEffect(() => {
+    handleGetTransaction()
+  }, [handleGetTransaction])
 
 
   return (
@@ -21,19 +40,19 @@ export function TransactionsTable() {
         </thead>
 
         <tbody>
-          <tr>
-            <td>asdasda</td>
-            <td className='deposit'>R$1000.00</td>
-            <td>dadsadasd</td>
-            <td>27/07/2021</td>
-          </tr>
 
-          <tr>
-            <td>asdasda</td>
-            <td className='withdraw'>- R$1000.00</td>
-            <td>dadsadasd</td>
-            <td>27/07/2021</td>
-          </tr>
+          {transactions.map((transaction) => {
+            return (
+              <tr key={transaction.id}>
+                <td>{transaction.title}</td>
+                <td className={transaction.type}>
+                  {FormatNumber({ currentNumber: transaction.amount })}
+                </td>
+                <td>{transaction.category}</td>
+                <td>{FormatDate({ currentDate: transaction.createdAt })}</td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </Container>
