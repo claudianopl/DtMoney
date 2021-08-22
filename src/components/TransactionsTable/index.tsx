@@ -1,31 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
-import { api } from "../../services/api";
+import { useTransaction } from "../../Hooks/UseTransactionsContext";
 import { FormatDate } from "../../utils/FormatDate";
 import { FormatNumber } from "../../utils/FormatNumber";
 import { Container } from "./styles";
 
-interface TransactionProps {
-  id: number;
-  title: string;
-  amount: number;
-  type: string;
-  category: string;
-  createdAt: string;
-}
+
 
 export function TransactionsTable() {
-  const [transactions, setTransactions] = useState<TransactionProps[]>([]);
-
-  const handleGetTransaction = useCallback(async () => {
-    const response = await api.get('/transactions');
-
-    setTransactions(response.data.transactions)
-  }, [])
-
-  useEffect(() => {
-    handleGetTransaction()
-  }, [handleGetTransaction])
-
+  const { transactions } = useTransaction()
 
   return (
     <Container>
